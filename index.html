@@ -1,5 +1,5 @@
 <!-- Copyright Lars Gerhard 2014 -->
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <title>EVERYTHING IS FINE</title>
@@ -7,6 +7,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Sono:wght@200..800&family=VT323&display=swap" rel="stylesheet">
     <style>
+        html {
+            height: 100%;
+        }
+
         body {
             margin: 0;
             height: 100%;
@@ -72,6 +76,8 @@
             color: #fff;
         }
 
+        /* --- Dimensions --- */
+
         .text-holder {
             font-size: 23.1vh;
         }
@@ -94,6 +100,47 @@
             }
         }
 
+        /* -------- */
+
+        /* Slide menu down on page load */
+        @keyframes slideDown {
+            0% { transform: translateY(-70px); }
+            100% { transform: translateY(0); }
+        }
+
+        .menu-outer {
+            animation: 3s ease-in 0s 1 slideDown;
+            bottom: -70px;
+            position: fixed;
+            display: flex;
+            width: 100%;
+            height: 125px;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .menu-outer:hover, .menu-outer:focus {
+            transform: translateY(-70px);
+            animation-timing-function: 1s ease-in;
+        }
+        .menu-inner {
+            color: #222;
+            background: #e8e8e8;
+            user-select: text;
+            position: relative;
+            top: 75px;
+            display: flex;
+            align-items: center;
+            height: 50px;
+            padding: 0 50px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            background: #8f80c64a;
+            box-shadow: 0px -3px 5px 0px rgba(58, 9, 107, 0.48);
+        }
+        .menu-inner a {
+            padding: 0 5px;
+            color: #8d4550;
+        }
     </style>
 </head>
 <body>
@@ -191,5 +238,27 @@
             </div>
         </div>
     </div>
+    <div class="menu-outer">
+        <div class="menu-inner">
+            <a href="javascript:modeDefault()">Default</a>
+            <a href="javascript:modeSlide()">Slide</a>
+            <a href="javascript:modeSeizure()">Seizure</a>
+        </div>
+    </div>
 </body>
+<script>
+    function blocksByClockwise() {
+        let blocks = document.querySelectorAll('.exclaim');
+        return Array.from(blocks);
+    }
+
+    function modeDefault() {
+    }
+    function modeSlide() {
+        let blocks = blocksByClockwise();
+        blocks.forEach((block) => console.log(block));
+    }
+    function modeSeizure() {
+    }
+</script>
 </html>
