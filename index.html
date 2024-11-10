@@ -120,7 +120,7 @@
             transform: translateY(-70px);
             animation-timing-function: 1s ease-in;
         }
-        .menu-inner {
+        .menu {
             color: #222;
             background-color: #e8e8e8;
             user-select: text;
@@ -135,9 +135,13 @@
             background-color: #8f80c64a;
             box-shadow: 0px -3px 5px 0px rgba(58, 9, 107, 0.48);
         }
-        .menu-inner a {
+        .menu a {
             padding: 0 5px;
             color: #8d4550;
+        }
+
+        .menu[current=false] {
+          display: none;
         }
 
         /* -------- */
@@ -268,13 +272,21 @@
         </div>
     </div>
     <div class="menu-outer">
-        <div class="menu-inner">
+        <div class="menu" menu="top" current="true">
             <a href="javascript:modeDefault()">Default</a>
-            <a href="javascript:modeSlide()">Slide</a>
+            <a href="javascript:modeSlide(1)">Slide</a>
             <a href="javascript:modeSeizure()">Seizure</a>
+        </div>
+        <!--    Category sub-menus. Start hidden.    -->
+        <div class="menu" menu="slide" current="false">
+            <a href="javascript:modeDefault()">Return</a>
+            <a href="javascript:modeSlide(1)">One</a>
+            <a href="javascript:modeSlide(2)">Two</a>
+            <a href="javascript:modeSlide(3)">Three</a>
         </div>
     </div>
 </body>
+
 <script>
     let END = 75;
 
@@ -301,13 +313,23 @@
        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    function setMenu(name) {
+        let from = document.querySelector(".menu[current=true]");
+        let to = document.querySelector(".menu[menu=" + name +"]");
+
+        from.setAttribute('current', 'false');
+        to.setAttribute('current', 'true');
+    }
+
     function modeDefault() {
         reset();
+        setMenu('top');
         reset = () => {}
     }
 
-    function modeSlide() {
+    function modeSlide(sliders) {
         reset();
+        setMenu('slide');
         let blocks = blocksByClockwise();
         let quit = false;
 
@@ -326,7 +348,6 @@
         }
 
         // If multiple sliders exist, space them out evently
-        let sliders = 2; //TODO: configurable?
         let step = END / sliders;
         while (sliders) {
             slide(Math.floor(step*sliders))
