@@ -25,7 +25,7 @@
             user-select: none;
         }
 
-        .canvas {
+        #canvas {
             display: flex;
             justify-content: center;
             text-align: center;
@@ -48,11 +48,11 @@
             justify-content: center;
         }
 
-        .border-horizontal {
+        .border.horizontal {
             display: flex;
         }
 
-        .border-vertical {
+        .border.vertical {
             display: flex;
             flex-direction: column;
         }
@@ -63,21 +63,15 @@
             flex-direction: column;
         }
 
-        .border-horizontal .exclaim {
+        .border.horizontal .exclaim:nth-child(odd),
+        .border.vertical .exclaim:nth-child(even) {
             background-color: #d52e48;
             color: #fff;
         }
-        .border-horizontal .exclaim:nth-child(even) {
+        .border.horizontal .exclaim:nth-child(even),
+        .border.vertical .exclaim:nth-child(odd) {
             background-color: #fff;
             color: #d52e48;
-        }
-        .border-vertical .exclaim {
-            background-color: #fff;
-            color: #d52e48;
-        }
-        .border-vertical .exclaim:nth-child(even) {
-            background-color: #d52e48;
-            color: #fff;
         }
 
         /* --- Dimensions --- */
@@ -103,8 +97,8 @@
                 font-size: 3.6vw;
             }
         }
-
         /* -------- */
+
         /* --- Menu Stuff --- */
 
         .menu-outer {
@@ -143,8 +137,8 @@
         .menu[current=false] {
           display: none;
         }
-
         /* -------- */
+
         /* ---Effects --- */
 
         .exclaim[slide=on] {
@@ -155,12 +149,26 @@
             background-color: default !important;
             transition: background-color 100ms linear;
         }
+
+        .exclaim[shuffle=even] {
+            background-color: #d52e48 !important;
+            color: #fff !important;
+            transition: background-color 25ms linear;
+            transition: color 25ms linear;
+        }
+        .exclaim[shuffle=odd] {
+            background-color: #fff !important;
+            color: #d52e48 !important;
+            transition: background-color 25ms linear;
+            transition: color 25ms linear;
+        }
+
     </style>
 </head>
 <body>
-    <div class="canvas">
+    <div id="canvas">
         <div class="inner">
-            <div class="border-horizontal">
+            <div class="border horizontal">
                 <div class="exclaim">!</div>
                 <div class="exclaim">!</div>
                 <div class="exclaim">!</div>
@@ -190,7 +198,7 @@
                 <div class="exclaim">!</div>
             </div>
             <div class="middle">
-                <div class="border-vertical">
+                <div class="border vertical">
                     <div class="exclaim">!</div>
                     <div class="exclaim">!</div>
                     <div class="exclaim">!</div>
@@ -226,7 +234,7 @@
                         <span>E</span>
                     </div>
                 </div>
-                <div class="border-vertical">
+                <div class="border vertical">
                     <div class="exclaim">!</div>
                     <div class="exclaim">!</div>
                     <div class="exclaim">!</div>
@@ -240,7 +248,7 @@
                     <div class="exclaim">!</div>
                 </div>
             </div>
-            <div class="border-horizontal">
+            <div class="border horizontal">
                 <div class="exclaim">!</div>
                 <div class="exclaim">!</div>
                 <div class="exclaim">!</div>
@@ -275,7 +283,7 @@
         <div class="menu" menu="top" current="true">
             <a href="javascript:modeDefault()">Default</a>
             <a href="javascript:modeSlide(1)">Slide</a>
-            <a href="javascript:modeSeizure()">Seizure</a>
+            <a href="javascript:modeShuffle(750)">Shuffle</a>
         </div>
         <!--    Category sub-menus. Start hidden.    -->
         <div class="menu" menu="slide" current="false">
@@ -284,11 +292,18 @@
             <a href="javascript:modeSlide(2)">Two</a>
             <a href="javascript:modeSlide(3)">Three</a>
         </div>
+        <div class="menu" menu="shuffle" current="false">
+            <a href="javascript:modeDefault()">Return</a>
+            <a href="javascript:modeShuffle(750)">Slow</a>
+            <a href="javascript:modeShuffle(250)">Fast</a>
+        </div>
     </div>
 </body>
 
 <script>
-    let END = 75;
+
+    // Reset the canvas by replacing it with the starting form
+    let defaultCanvas = document.getElementById('canvas').cloneNode(true);
 
     // There are 27 horizontal blocks and 11 vertical blocks
     function blocksByClockwise() {
@@ -333,35 +348,60 @@
         let blocks = blocksByClockwise();
         let quit = false;
 
+        let MAX = 75;
+
         // Slide effect in a clockwise fashion.
         function slide(start) {
             setTimeout(async () => {
                 let i = start;
                 while (!quit) {
-                    prev = i == 0 ? END : i -1;
+                    prev = i == 0 ? MAX : i -1;
                     blocks[i].setAttribute('slide', 'on');
                     blocks[prev].setAttribute('slide', 'off');
                     await sleep(25);
-                    i == END ? i = 0 : i++;
+                    i == MAX ? i = 0 : i++;
                 }
             }, 0)
         }
 
         // If multiple sliders exist, space them out evently
-        let step = END / sliders;
+        let step = MAX / sliders;
         while (sliders) {
             slide(Math.floor(step*sliders))
             sliders--;
         }
 
         reset = function() {
-            blocks.forEach((block) => block.removeAttribute('slide'));
+            document.getElementById('canvas').replaceWith(defaultCanvas.cloneNode(true));
             quit = true
         }
     }
 
-    function modeSeizure() {
+    function modeShuffle(speed) {
         reset();
+        setMenu('shuffle');
+        let blocks = blocksByClockwise();
+        let quit = false;
+
+        setTimeout(async () => {
+            step = false;
+            while (!quit) {
+                for (let i = 0; i < blocks.length; i++) {
+                    if (step) {
+                        blocks[i].setAttribute('shuffle', i % 2 ? 'odd' : 'even');
+                    } else {
+                        blocks[i].setAttribute('shuffle', i % 2 ? 'even' : 'odd');
+                    }
+                }
+                step = !step;
+                await sleep(speed);
+            }
+        }, 0)
+
+        reset = function() {
+            document.getElementById('canvas').replaceWith(defaultCanvas.cloneNode(true));
+            quit = true
+        }
     }
 </script>
 </html>
