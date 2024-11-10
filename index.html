@@ -43,6 +43,10 @@
             justify-content: center;
             width: 100%;
         }
+        .text-holder div {
+            display: flex;
+            justify-content: center;
+        }
 
         .border-horizontal {
             display: flex;
@@ -60,19 +64,19 @@
         }
 
         .border-horizontal .exclaim {
-            background: #d52e48;
+            background-color: #d52e48;
             color: #fff;
         }
         .border-horizontal .exclaim:nth-child(even) {
-            background: #fff;
+            background-color: #fff;
             color: #d52e48;
         }
         .border-vertical .exclaim {
-            background: #fff;
+            background-color: #fff;
             color: #d52e48;
         }
         .border-vertical .exclaim:nth-child(even) {
-            background: #d52e48;
+            background-color: #d52e48;
             color: #fff;
         }
 
@@ -101,6 +105,7 @@
         }
 
         /* -------- */
+        /* --- Menu Stuff --- */
 
         .menu-outer {
             bottom: -70px;
@@ -117,7 +122,7 @@
         }
         .menu-inner {
             color: #222;
-            background: #e8e8e8;
+            background-color: #e8e8e8;
             user-select: text;
             position: relative;
             top: 75px;
@@ -127,12 +132,24 @@
             padding: 0 50px;
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
-            background: #8f80c64a;
+            background-color: #8f80c64a;
             box-shadow: 0px -3px 5px 0px rgba(58, 9, 107, 0.48);
         }
         .menu-inner a {
             padding: 0 5px;
             color: #8d4550;
+        }
+
+        /* -------- */
+        /* ---Effects --- */
+
+        .exclaim[slide=on] {
+            background-color: #5f0 !important;
+            transition: background-color 25ms linear;
+        }
+        .exclaim[slide=off] {
+            background-color: default !important;
+            transition: background-color 100ms linear;
         }
     </style>
 </head>
@@ -183,8 +200,27 @@
                     <div class="exclaim">!</div>
                 </div>
                 <div class="text-holder">
-                    <div class="text-line1">EVERYTHING</div>
-                    <div class="text-line2">IS FINE</div>
+                    <div class="text-line1">
+                        <span>E</span>
+                        <span>V</span>
+                        <span>E</span>
+                        <span>R</span>
+                        <span>Y</span>
+                        <span>T</span>
+                        <span>H</span>
+                        <span>I</span>
+                        <span>N</span>
+                        <span>G</span>
+                    </div>
+                    <div class="text-line2">
+                        <span>I</span>
+                        <span>S</span>
+                        <span>&nbsp;</span>
+                        <span>F</span>
+                        <span>I</span>
+                        <span>N</span>
+                        <span>E</span>
+                    </div>
                 </div>
                 <div class="border-vertical">
                     <div class="exclaim">!</div>
@@ -240,18 +276,71 @@
     </div>
 </body>
 <script>
+    let END = 75;
+
+    // There are 27 horizontal blocks and 11 vertical blocks
     function blocksByClockwise() {
-        let blocks = document.querySelectorAll('.exclaim');
-        return Array.from(blocks);
+        let blocks = Array.from(document.querySelectorAll('.exclaim'));
+        return [].concat(
+            blocks.slice(0, 27),
+            blocks.slice(38, 49),
+            blocks.slice(49, 76).reverse(),
+            blocks.slice(27, 38).reverse()
+        );
+    }
+    function blocksByCounterClockwise() {
+        return blocksByClockwise().reverse();
+    }
+
+    // Assign a new reset function at the end of an effect that clears the effect.
+    // Run this function at the start of each effect to start from a clean state.
+    var reset = () => {};
+
+    // Sleep? In my javascript? Makes effects much easier.
+    function sleep(ms) {
+       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     function modeDefault() {
+        reset();
+        reset = () => {}
     }
+
     function modeSlide() {
+        reset();
         let blocks = blocksByClockwise();
-        blocks.forEach((block) => console.log(block));
+        let quit = false;
+
+        // Slide effect in a clockwise fashion.
+        function slide(start) {
+            setTimeout(async () => {
+                let i = start;
+                while (!quit) {
+                    prev = i == 0 ? END : i -1;
+                    blocks[i].setAttribute('slide', 'on');
+                    blocks[prev].setAttribute('slide', 'off');
+                    await sleep(25);
+                    i == END ? i = 0 : i++;
+                }
+            }, 0)
+        }
+
+        // If multiple sliders exist, space them out evently
+        let sliders = 2; //TODO: configurable?
+        let step = END / sliders;
+        while (sliders) {
+            slide(Math.floor(step*sliders))
+            sliders--;
+        }
+
+        reset = function() {
+            blocks.forEach((block) => block.removeAttribute('slide'));
+            quit = true
+        }
     }
+
     function modeSeizure() {
+        reset();
     }
 </script>
 </html>
