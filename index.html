@@ -137,6 +137,14 @@
         .menu[current=false] {
           display: none;
         }
+
+        .github {
+          align-self: end;
+          margin-bottom: 12px;
+          position: absolute;
+          right: 15px;
+          color: #000;
+        }
         /* -------- */
 
         /* ---Effects --- */
@@ -153,14 +161,10 @@
         .exclaim[shuffle=even] {
             background-color: #d52e48 !important;
             color: #fff !important;
-            transition: background-color 25ms linear;
-            transition: color 25ms linear;
         }
         .exclaim[shuffle=odd] {
             background-color: #fff !important;
             color: #d52e48 !important;
-            transition: background-color 25ms linear;
-            transition: color 25ms linear;
         }
 
     </style>
@@ -282,7 +286,7 @@
     <div class="menu-outer">
         <div class="menu" menu="top" current="true">
             <a href="javascript:modeDefault()">Default</a>
-            <a href="javascript:modeSlide(1)">Slide</a>
+            <a href="javascript:modeSlide(2)">Slide</a>
             <a href="javascript:modeShuffle(750)">Shuffle</a>
         </div>
         <!--    Category sub-menus. Start hidden.    -->
@@ -297,6 +301,8 @@
             <a href="javascript:modeShuffle(750)">Slow</a>
             <a href="javascript:modeShuffle(250)">Fast</a>
         </div>
+
+        <a class="github" href="https://github.com/hssm/alliswell">[GitHub]</a>
     </div>
 </body>
 
