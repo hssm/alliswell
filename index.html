@@ -126,7 +126,6 @@
             padding: 0 50px;
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
-            background-color: #8f80c64a;
             box-shadow: 0px -3px 5px 0px rgba(58, 9, 107, 0.48);
         }
         .menu a {
@@ -147,8 +146,9 @@
         }
         /* -------- */
 
-        /* ---Effects --- */
+        /* --- Effects --- */
 
+        /* --- Slide --- */
         .exclaim[slide=on] {
             background-color: #5f0 !important;
             transition: background-color 25ms linear;
@@ -158,6 +158,15 @@
             transition: background-color 100ms linear;
         }
 
+        /* --- Shuffle --- */
+        @keyframes shuffle-spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+        }
         .exclaim[shuffle=even] {
             background-color: #d52e48 !important;
             color: #fff !important;
@@ -166,13 +175,16 @@
             background-color: #fff !important;
             color: #d52e48 !important;
         }
+        .text-holder[shuffle=rotate] span {
+            animation: shuffle-spin 9s steps(12, end) infinite;
+        }
 
+        /* --- Blink --- */
         @keyframes blinker {
             50% {
                 opacity: 0;
             }
         }
-
         #canvas[blink=on] {
             animation: blinker 0.5s step-start infinite;
         }
@@ -185,6 +197,32 @@
         .text-holder[blink=alternate] {
             animation: blinker 0.5s step-start infinite;
             animation-delay: 0.25s;
+        }
+
+        /* --- Party --- */
+        @keyframes party-spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+        }
+
+        /* Borrowed from here: https://unused-css.com/blog/css-shake-animation/ */
+        @keyframes party-shake-x {
+         0% { transform: translateX(0) }
+         25% { transform: translateX(5px) }
+         50% { transform: translateX(-5px) }
+         75% { transform: translateX(5px) }
+         100% { transform: translateX(0) }
+        }
+        @keyframes party-shake-y {
+         0% { transform: translateY(0) }
+         25% { transform: translateY(5px) }
+         50% { transform: translateY(-5px) }
+         75% { transform: translateY(5px) }
+         100% { transform: translateY(0) }
         }
 
     </style>
@@ -309,6 +347,7 @@
             <a href="javascript:modeBlink('all')">Blink</a>
             <a href="javascript:modeSlide(2)">Slide</a>
             <a href="javascript:modeShuffle(750)">Shuffle</a>
+            <a href="javascript:modeParty('soft')">Party</a>
         </div>
         <!--    Category sub-menus. Start hidden.    -->
         <div class="menu" menu="slide" current="false">
@@ -321,6 +360,7 @@
             <a href="javascript:modeDefault()">Return</a>
             <a href="javascript:modeShuffle(750)">Slow</a>
             <a href="javascript:modeShuffle(250)">Fast</a>
+            <a href="javascript:modeShuffle(750, true)">Rotate</a>
         </div>
         <div class="menu" menu="blink" current="false">
             <a href="javascript:modeDefault()">Return</a>
@@ -328,6 +368,12 @@
             <a href="javascript:modeBlink('border')">Border</a>
             <a href="javascript:modeBlink('text')">Text</a>
             <a href="javascript:modeBlink('alternate')">Alternate</a>
+        </div>
+        <div class="menu" menu="party" current="false">
+            <a href="javascript:modeDefault()">Return</a>
+            <a href="javascript:modeParty('soft')">Soft</a>
+            <a href="javascript:modeParty('hard')">Hard</a>
+            <a href="javascript:modeParty('seizure')">Seizure</a>
         </div>
 
         <a class="github" href="https://github.com/hssm/alliswell">[GitHub]</a>
@@ -360,6 +406,15 @@
     // Sleep? In my javascript? Makes effects much easier.
     function sleep(ms) {
        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function randomColor() {
+        var letters = '0123456789ABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.round(Math.random() * 15)];
+        }
+        return color;
     }
 
     function setMenu(name) {
@@ -411,7 +466,7 @@
         }
     }
 
-    function modeShuffle(speed) {
+    function modeShuffle(speed, rotate) {
         reset();
         setMenu('shuffle');
         let blocks = blocksByClockwise();
@@ -431,6 +486,10 @@
                 await sleep(speed);
             }
         }, 0)
+
+        if (rotate) {
+            document.getElementsByClassName('text-holder')[0].setAttribute('shuffle', 'rotate');
+        }
 
         reset = function() {
             document.getElementById('canvas').replaceWith(defaultCanvas.cloneNode(true));
@@ -468,5 +527,83 @@
             document.getElementById('canvas').replaceWith(defaultCanvas.cloneNode(true));
         }
     }
+
+    function modeParty(type) {
+        reset();
+        setMenu('party');
+        let quit = false;
+
+        let blocks = document.querySelectorAll('.exclaim');
+        let letters = document.querySelectorAll('.text-holder span');
+
+        // TODO: factor out maybe
+        if (type == 'hard') {
+            setTimeout(async () => {
+                let i = 0;
+                while (!quit) {
+                    document.body.style.backgroundColor = randomColor();
+                    document.body.style.transition = 'background-color 50ms linear';
+
+                    // Spice it up by varying the iterations for each part
+                    if (!(i % 3)) {
+                        blocks.forEach((block) => {
+                            block.style.color = randomColor();
+                            block.style.backgroundColor = randomColor();
+                            block.style.transition = 'background-color 50ms linear';
+                            block.style.animation = 'party-spin 4s steps(8, end) infinite'
+                        });
+                    }
+                    if (!(i % 4)) {
+                        letters.forEach((letter) => {
+                            letter.style.color = randomColor();
+                            letter.style.transition = 'color 50ms linear';
+                            letter.style.animation = 'party-shake-x 0.15s infinite'
+                        });
+                    }
+                    i++;
+                    await sleep(150);
+                }
+            }, 0)
+        }
+        if (type == 'soft') {
+            setTimeout(async () => {
+                let i = 0;
+                while (!quit) {
+                    document.body.style.backgroundColor = randomColor();
+                    document.body.style.transition = 'background-color 50ms linear';
+
+                    // Spice it up by varying the iterations for each part
+                    if (!(i % 3)) {
+                        blocks.forEach((block) => {
+                            block.style.color = randomColor();
+                            block.style.backgroundColor = randomColor();
+                            block.style.transition = 'background-color 50ms linear';
+                        });
+                    }
+                    if (!(i % 4)) {
+                        letters.forEach((letter) => {
+                            letter.style.color = randomColor();
+                            letter.style.transition = 'color 50ms linear';
+                        });
+                    }
+                    i++;
+                    await sleep(333);
+                }
+            }, 0)
+        }
+        if (type == 'seizure') {
+
+        }
+
+        reset = function() {
+            document.getElementById('canvas').replaceWith(defaultCanvas.cloneNode(true));
+            document.body.style.backgroundColor = 'unset';
+            quit = true
+        }
+    }
+
+    // Start on this one. I like it.
+    modeSlide(2);
+    setMenu('top');
 </script>
 </html>
