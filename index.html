@@ -139,11 +139,11 @@
         }
 
         .github {
-          align-self: end;
-          margin-bottom: 12px;
-          position: absolute;
-          right: 15px;
-          color: #000;
+            align-self: end;
+            margin-bottom: 12px;
+            position: absolute;
+            right: 15px;
+            color: #000;
         }
         /* -------- */
 
@@ -165,6 +165,26 @@
         .exclaim[shuffle=odd] {
             background-color: #fff !important;
             color: #d52e48 !important;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        #canvas[blink=on] {
+            animation: blinker 0.5s step-start infinite;
+        }
+        .border[blink=on] {
+            animation: blinker 0.5s step-start infinite;
+        }
+        .text-holder[blink=on] {
+            animation: blinker 0.5s step-start infinite;
+        }
+        .text-holder[blink=alternate] {
+            animation: blinker 0.5s step-start infinite;
+            animation-delay: 0.25s;
         }
 
     </style>
@@ -286,6 +306,7 @@
     <div class="menu-outer">
         <div class="menu" menu="top" current="true">
             <a href="javascript:modeDefault()">Default</a>
+            <a href="javascript:modeBlink('all')">Blink</a>
             <a href="javascript:modeSlide(2)">Slide</a>
             <a href="javascript:modeShuffle(750)">Shuffle</a>
         </div>
@@ -300,6 +321,13 @@
             <a href="javascript:modeDefault()">Return</a>
             <a href="javascript:modeShuffle(750)">Slow</a>
             <a href="javascript:modeShuffle(250)">Fast</a>
+        </div>
+        <div class="menu" menu="blink" current="false">
+            <a href="javascript:modeDefault()">Return</a>
+            <a href="javascript:modeBlink('all')">All</a>
+            <a href="javascript:modeBlink('border')">Border</a>
+            <a href="javascript:modeBlink('text')">Text</a>
+            <a href="javascript:modeBlink('alternate')">Alternate</a>
         </div>
 
         <a class="github" href="https://github.com/hssm/alliswell">[GitHub]</a>
@@ -407,6 +435,37 @@
         reset = function() {
             document.getElementById('canvas').replaceWith(defaultCanvas.cloneNode(true));
             quit = true
+        }
+    }
+
+    function modeBlink(type) {
+        reset();
+        setMenu('blink');
+
+        if (type == 'all') {
+            document.getElementById('canvas').setAttribute('blink', 'on');
+        }
+        if (type == 'border') {
+            let borders = document.getElementsByClassName('border');
+            borders[0].setAttribute('blink', 'on');
+            borders[1].setAttribute('blink', 'on');
+            borders[2].setAttribute('blink', 'on');
+            borders[3].setAttribute('blink', 'on');
+        }
+        if (type == 'text') {
+            document.getElementsByClassName('text-holder')[0].setAttribute('blink', 'on');
+        }
+        if (type == 'alternate') {
+            document.getElementsByClassName('text-holder')[0].setAttribute('blink', 'alternate');
+            let borders = document.getElementsByClassName('border');
+            borders[0].setAttribute('blink', 'on');
+            borders[1].setAttribute('blink', 'on');
+            borders[2].setAttribute('blink', 'on');
+            borders[3].setAttribute('blink', 'on');
+        }
+
+        reset = function() {
+            document.getElementById('canvas').replaceWith(defaultCanvas.cloneNode(true));
         }
     }
 </script>
