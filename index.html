@@ -139,6 +139,10 @@
         .menu[current=false] {
           display: none;
         }
+        #menu-hint {
+            position: absolute;
+            color: #ccc;
+        }
 
         .github {
             align-self: end;
@@ -367,6 +371,7 @@
         </div>
     </div>
     <div class="menu-outer">
+        <div id="menu-hint">⇓⇓⇓ Menu Here ⇓⇓⇓</div>
         <div class="menu" menu="top" current="true">
             <a href="javascript:modeDefault()">Clear</a>
             <a href="javascript:modeBlink('all')">Blink</a>
@@ -642,5 +647,9 @@
     // Start on this one. I like it.
     modeSlide(2);
     setMenu('top');
+
+    let hint = document.getElementById('menu-hint');
+    hint.addEventListener("mouseover", (event) => { hint.remove() });
+
 </script>
 </html>
