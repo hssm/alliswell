@@ -131,8 +131,11 @@
         .menu a {
             padding: 0 5px;
             color: #8d4550;
+            font-weight: 400;
         }
-
+        .menu a:first-child {
+            font-weight: 700;
+        }
         .menu[current=false] {
           display: none;
         }
@@ -225,6 +228,28 @@
          100% { transform: translateY(0) }
         }
 
+        @keyframes seizure {
+            0% { background-color: red }
+            15% { background-color: white }
+            30% { background-color: blue }
+            45% { background-color: red }
+            60% { background-color: blue }
+            75% { background-color: white }
+            100% { background-color: red }
+        }
+        @keyframes seizure-text {
+            0% { color: red }
+            15% { color: white }
+            30% { color: blue }
+            45% { color: red }
+            60% { color: blue }
+            75% { color: white }
+            100% { color: red }
+        }
+        .exclaim[seizure=on] {
+            animation: 0.5s seizure infinite;
+        }
+
     </style>
 </head>
 <body>
@@ -289,7 +314,7 @@
                     <div class="text-line2">
                         <span>I</span>
                         <span>S</span>
-                        <span>&nbsp;</span>
+                        <span id="text-space">&nbsp;</span>
                         <span>F</span>
                         <span>I</span>
                         <span>N</span>
@@ -343,7 +368,7 @@
     </div>
     <div class="menu-outer">
         <div class="menu" menu="top" current="true">
-            <a href="javascript:modeDefault()">Default</a>
+            <a href="javascript:modeDefault()">Clear</a>
             <a href="javascript:modeBlink('all')">Blink</a>
             <a href="javascript:modeSlide(2)">Slide</a>
             <a href="javascript:modeShuffle(750)">Shuffle</a>
@@ -351,28 +376,28 @@
         </div>
         <!--    Category sub-menus. Start hidden.    -->
         <div class="menu" menu="slide" current="false">
-            <a href="javascript:modeDefault()">Return</a>
+            <a href="javascript:modeDefault()">Clear</a>
             <a href="javascript:modeSlide(1)">One</a>
             <a href="javascript:modeSlide(2)">Two</a>
             <a href="javascript:modeSlide(3)">Three</a>
         </div>
         <div class="menu" menu="shuffle" current="false">
-            <a href="javascript:modeDefault()">Return</a>
+            <a href="javascript:modeDefault()">Clear</a>
             <a href="javascript:modeShuffle(750)">Slow</a>
             <a href="javascript:modeShuffle(250)">Fast</a>
             <a href="javascript:modeShuffle(750, true)">Rotate</a>
         </div>
         <div class="menu" menu="blink" current="false">
-            <a href="javascript:modeDefault()">Return</a>
+            <a href="javascript:modeDefault()">Clear</a>
             <a href="javascript:modeBlink('all')">All</a>
             <a href="javascript:modeBlink('border')">Border</a>
             <a href="javascript:modeBlink('text')">Text</a>
             <a href="javascript:modeBlink('alternate')">Alternate</a>
         </div>
         <div class="menu" menu="party" current="false">
-            <a href="javascript:modeDefault()">Return</a>
-            <a href="javascript:modeParty('soft')">Soft</a>
-            <a href="javascript:modeParty('hard')">Hard</a>
+            <a href="javascript:modeDefault()">Clear</a>
+            <a href="javascript:modeParty('soft')">Candy</a>
+            <a href="javascript:modeParty('hard')">Party Hard</a>
             <a href="javascript:modeParty('seizure')">Seizure</a>
         </div>
 
@@ -415,6 +440,10 @@
             color += letters[Math.round(Math.random() * 15)];
         }
         return color;
+    }
+
+    function getRandom(min, max) {
+        return min + Math.floor(Math.random() * (max - min + 1));
     }
 
     function setMenu(name) {
@@ -592,12 +621,20 @@
             }, 0)
         }
         if (type == 'seizure') {
-
+            if (confirm("It is 100% what it says it is and likely MUCH WORSE. Still sure?")) {
+                document.body.style.animation = '0.3s seizure infinite';
+                blocks.forEach((block) => {
+                    block.style.animation = '0.5s seizure infinite'
+                });
+                document.getElementById('text-space').innerHTML = '&nbsp;NOT&nbsp;'
+                document.getElementById('text-space').style.animation = '1s seizure-text infinite';
+            }
         }
 
         reset = function() {
             document.getElementById('canvas').replaceWith(defaultCanvas.cloneNode(true));
             document.body.style.backgroundColor = 'unset';
+            document.body.style.animation = 'unset';
             quit = true
         }
     }
