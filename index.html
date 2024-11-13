@@ -141,7 +141,7 @@
         }
         #menu-hint {
             position: absolute;
-            color: #ccc;
+            color: #bbb;
         }
 
         .github {
@@ -371,7 +371,7 @@
         </div>
     </div>
     <div class="menu-outer">
-        <div id="menu-hint">⇓⇓⇓ Menu Here ⇓⇓⇓</div>
+        <div id="menu-hint">v--menu--v</div>
         <div class="menu" menu="top" current="true">
             <a href="javascript:modeDefault()">Clear</a>
             <a href="javascript:modeBlink('all')">Blink</a>
@@ -648,8 +648,9 @@
     modeSlide(2);
     setMenu('top');
 
+    // Hide the menu hint after first use
+    let outer = document.getElementsByClassName('menu-outer')[0];
     let hint = document.getElementById('menu-hint');
-    hint.addEventListener("mouseover", (event) => { hint.remove() });
-
+    outer.addEventListener("mouseover", (event) => { hint.remove() });
 </script>
 </html>
